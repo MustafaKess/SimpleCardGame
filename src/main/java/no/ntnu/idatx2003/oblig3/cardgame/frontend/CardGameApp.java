@@ -1,49 +1,48 @@
 package no.ntnu.idatx2003.oblig3.cardgame.frontend;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Application;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import no.ntnu.idatx2003.oblig3.cardgame.PlayingCard;
+import no.ntnu.idatx2003.oblig3.cardgame.HandAnalyzer;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CardGameApp extends Application {
 
   private HBox cardBox;
-  private BorderPane root = new BorderPane(); // Initialize root here
+  private BorderPane root = new BorderPane();
+  private Text analysisText = new Text();
 
   @Override
   public void start(Stage primaryStage) {
-    // Load initial hand of cards
-    cardBox = CardInitializer.initializeHand();
+    List<PlayingCard> hand = CardInitializer.initializeHand();
+    cardBox = new HBox(10);
+    for (PlayingCard card : hand) {
+      Node cardNode = CardInitializer.createCardImageView(card);
+      cardBox.getChildren().add(cardNode);
+    }
 
-    // Create buttons
     Button rerollButton = new Button("Re-roll");
     Button changeThemeButton = new Button("Change background theme");
 
-    // Create an HBox to contain the buttons
     HBox buttonBox = new HBox(10);
-    buttonBox.getChildren().addAll(rerollButton);
+    buttonBox.getChildren().addAll(rerollButton, changeThemeButton);
     buttonBox.setAlignment(Pos.CENTER);
 
-    // Add event handler for the re-roll button
-    rerollButton.setOnAction(event -> {
-      // Redraw the hand of cards
-      System.out.println("Re-rolling hand of cards");
-      cardBox = CardInitializer.redrawHand(cardBox);
-    });
-
-    // Boolean variable to track background theme
     AtomicBoolean isGreyTheme = new AtomicBoolean(false);
     isGreyTheme.set(true);
 
-    // Add event handler for the change theme button
     changeThemeButton.setOnAction(event -> {
-      // Toggle background theme
-      isGreyTheme.set(!isGreyTheme.get()); // Use get() to retrieve the value
-      // Update background color of the root BorderPane
+      isGreyTheme.set(!isGreyTheme.get());
       if (isGreyTheme.get()) {
         root.setStyle("-fx-background-color: grey;");
       } else {
@@ -51,25 +50,35 @@ public class CardGameApp extends Application {
       }
     });
 
-    // Set the position of the change theme button
-    BorderPane.setAlignment(changeThemeButton, Pos.BOTTOM_LEFT);
-    root.setBottom(changeThemeButton);
+    rerollButton.setOnAction(event -> {
+      List<PlayingCard> newHand = CardInitializer.redrawHand();
+      cardBox.getChildren().clear();
+      for (PlayingCard card : newHand) {
+        Node cardNode = CardInitializer.createCardImageView(card);
+        cardBox.getChildren().add(cardNode);
+      }
+      updateAnalysisText(newHand);
+    });
 
-    // Set initial background color to grey
+    BorderPane.setAlignment(buttonBox, Pos.BOTTOM_LEFT);
+    root.setBottom(buttonBox);
+
     root.setStyle("-fx-background-color: grey;");
 
-    // Create a BorderPane to organize the layout
-    root.setLeft(cardBox);
-    root.setCenter(buttonBox);
+    root.setCenter(cardBox);
 
     Scene scene = new Scene(root, 600, 400);
     primaryStage.setScene(scene);
     primaryStage.setTitle("Card game");
-
-    // Ensure that the window size is fixed
     primaryStage.setResizable(false);
-
     primaryStage.show();
+
+    updateAnalysisText(hand);
+  }
+
+  private void updateAnalysisText(List<PlayingCard> hand) {
+    String analysis = HandAnalyzer.analyzeHand(hand); // Using HandAnalyzer to analyze the hand
+    analysisText.setText(analysis);
   }
 
   public static void main(String[] args) {

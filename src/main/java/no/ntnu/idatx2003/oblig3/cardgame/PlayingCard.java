@@ -56,4 +56,5 @@ public class PlayingCard {
   public String getName() {
     return String.format("%s%s", suit, face);
   }
+
 }
