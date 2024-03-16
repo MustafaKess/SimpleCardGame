@@ -12,66 +12,61 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CardGameApp extends Application {
 
+  private HBox cardBox;
+  private BorderPane root; // Declare root as a class member
+
   @Override
   public void start(Stage primaryStage) {
-    DeckOfCards deck = new DeckOfCards();
-    deck.drawHand();
-    String card1Name = deck.getDrawnCards().get(0).getName();
-    String card2Name = deck.getDrawnCards().get(1).getName();
-    String card3Name = deck.getDrawnCards().get(2).getName();
-    String card4Name = deck.getDrawnCards().get(3).getName();
-    String card5Name = deck.getDrawnCards().get(4).getName();
-
-    // Specify the path to the image files
-    String imagePathPrefix = "C:/Users/musta/Downloads/oblig3-cardgame-template/src/main/resources/cardimages/";
-    //List<String> imagePaths = List.of("C1.png", "C2.png", "C3.png", "C4.png", "C5.png"); // Example card names
-    List<String> imagePaths = List.of(card1Name + ".png", card2Name + ".png", card3Name + ".png", card4Name + ".png", card5Name + ".png"); // Example card names
-
-    // Load card images
-    List<Image> cardImages = new ArrayList<>();
-    for (String imagePath : imagePaths) {
-      try {
-        cardImages.add(new Image(new FileInputStream(imagePathPrefix + imagePath)));
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-
-    // Create ImageViews for each card image
-    List<ImageView> cardImageViews = new ArrayList<>();
-    for (Image cardImage : cardImages) {
-      ImageView imageView = new ImageView(cardImage);
-      double cardWidth = 80;
-      double cardHeight = 120;
-      imageView.setFitWidth(cardWidth);
-      imageView.setFitHeight(cardHeight);
-      cardImageViews.add(imageView);
-    }
-
-    // Create an HBox to contain the card ImageViews
-    HBox cardBox = new HBox(10);
-    cardBox.getChildren().addAll(cardImageViews);
-    cardBox.setAlignment(Pos.CENTER);
+    // Load initial hand of cards
+    redrawHand();
 
     // Create buttons
     Button rerollButton = new Button("Re-roll");
-    Button hiButton = new Button("Hi");
-    Button testButton = new Button("Test");
+    Button changeThemeButton = new Button("Change background theme");
 
     // Create an HBox to contain the buttons
     HBox buttonBox = new HBox(10);
-    buttonBox.getChildren().addAll(rerollButton, hiButton, testButton);
+    buttonBox.getChildren().addAll(rerollButton);
     buttonBox.setAlignment(Pos.CENTER);
 
     // Create a BorderPane to organize the layout
-    BorderPane root = new BorderPane();
+    root = new BorderPane(); // Initialize root here
     root.setLeft(cardBox);
     root.setCenter(buttonBox);
+
+    // Set initial background color to grey
+    root.setStyle("-fx-background-color: grey;");
+
+    // Add event handler for the re-roll button
+    rerollButton.setOnAction(event -> {
+      // Redraw the hand of cards
+      System.out.println("Re-rolling hand of cards");
+      redrawHand();
+    });
+
+    // Boolean variable to track background theme
+    AtomicBoolean isGreyTheme = new AtomicBoolean(false);
+    isGreyTheme.set(true);
+
+    // Add event handler for the change theme button
+    changeThemeButton.setOnAction(event -> {
+      // Toggle background theme
+      isGreyTheme.set(!isGreyTheme.get()); // Use get() to retrieve the value
+      // Update background color of the root BorderPane
+      if (isGreyTheme.get()) {
+        root.setStyle("-fx-background-color: grey;");
+      } else {
+        root.setStyle("-fx-background-color: white;");
+      }
+    });
+
+    // Set the position of the change theme button
+    BorderPane.setAlignment(changeThemeButton, Pos.BOTTOM_LEFT);
+    root.setBottom(changeThemeButton);
 
     Scene scene = new Scene(root, 600, 400);
     primaryStage.setScene(scene);
@@ -81,6 +76,44 @@ public class CardGameApp extends Application {
     primaryStage.setResizable(false);
 
     primaryStage.show();
+  }
+
+  private void redrawHand() {
+    DeckOfCards deck = new DeckOfCards();
+    deck.drawHand();
+
+    // Clear existing cards
+    if (cardBox != null) {
+      cardBox.getChildren().clear();
+    } else {
+      cardBox = new HBox(10); // Create a new HBox if it doesn't exist
+    }
+
+    // Load card images
+    for (PlayingCard card : deck.getDrawnCards()) {
+      ImageView imageView = createCardImageView(card);
+      cardBox.getChildren().add(imageView); // Add the new card image to the HBox
+    }
+    cardBox.setAlignment(Pos.CENTER);
+  }
+
+  private ImageView createCardImageView(PlayingCard card) {
+    // Specify the path to the image file
+    String imagePath = "C:/Users/musta/Downloads/oblig3-cardgame-template/src/main/resources/cardimages/" + card.getName() + ".png";
+    Image image = null;
+    try {
+      image = new Image(new FileInputStream(imagePath));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+    // Create ImageView for the card image
+    ImageView imageView = new ImageView(image);
+    double cardWidth = 80;
+    double cardHeight = 120;
+    imageView.setFitWidth(cardWidth);
+    imageView.setFitHeight(cardHeight);
+    return imageView;
   }
 
   public static void main(String[] args) {
