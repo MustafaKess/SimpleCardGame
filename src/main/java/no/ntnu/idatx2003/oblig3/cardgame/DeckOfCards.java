@@ -60,4 +60,13 @@ public class DeckOfCards {
     }
   }
 
+  public void forceFlush() {
+    drawnCards.clear();
+    for (int i = 1; i <= 5; i++) {
+      PlayingCard card = new PlayingCard('S', i);
+      drawnCards.add(card);
+    }
+  }
+
+
 }

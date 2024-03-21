@@ -43,4 +43,9 @@ public class CardInitializer {
     imageView.setFitHeight(cardHeight);
     return imageView;
   }
+  public static List<PlayingCard> forceFlush() {
+    DeckOfCards deck = new DeckOfCards();
+    deck.forceFlush();
+    return deck.getDrawnCards();
+  }
 }
