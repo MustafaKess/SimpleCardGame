@@ -4,16 +4,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Class for analyzing a hand of playing cards.
- * <p> The class contains methods for calculating the sum of the face values of the cards in the hand,
- * extracting the hearts from the hand, checking if the hand contains the Queen of Spades,
- * and checking if the hand is a 5-flush.
+ * Class for analyzing a hand of playing cards. The class contains methods for calculating the sum
+ * of the face values of the cards in the hand, extracting the hearts from the hand, checking if the
+ * hand contains the Queen of Spades, and checking if the hand is a 5-flush.
  */
 
 public class HandAnalyzer {
 
+  private HandAnalyzer() {
+  }
+
   /**
    * Calculates the sum of the face values of the cards in the hand.
+   *
    * @param hand a list of playing cards
    * @return the sum of the face values of the cards in the hand
    */
@@ -24,15 +27,18 @@ public class HandAnalyzer {
   }
 
   /**
-   * Extracts the hearts from the hand. If the hand does not contain any hearts, the method returns "No Hearts".
+   * Extracts the hearts from the hand. If the hand does not contain any hearts, the method returns
+   * "No Hearts".
+   *
    * @param hand a list of playing cards
-   * @return a string containing the hearts in the hand, or "No Hearts" if the hand does not contain any hearts
+   * @return a string containing the hearts in the hand, or "No Hearts" if the hand does not contain
+   * any hearts
    */
 
   public static String extractHearts(List<PlayingCard> hand) {
     List<PlayingCard> hearts = hand.stream()
         .filter(card -> card.getSuit() == 'H')
-        .collect(Collectors.toList());
+        .toList();
 
     if (hearts.isEmpty()) {
       return "No Hearts";
@@ -45,6 +51,7 @@ public class HandAnalyzer {
 
   /**
    * Checks if the hand contains the Queen of Spades.
+   *
    * @param hand a list of playing cards
    * @return true if the hand contains the Queen of Spades, false otherwise
    */
@@ -55,8 +62,8 @@ public class HandAnalyzer {
   }
 
   /**
-   * Checks if the hand is a 5-flush, i.e.,
-   * if the hand contains 5 or more cards of the same suit.
+   * Checks if the hand is a 5-flush, i.e., if the hand contains 5 or more cards of the same suit.
+   *
    * @param hand a list of playing cards
    * @return true if the hand is a 5-flush, false otherwise
    */
@@ -68,8 +75,9 @@ public class HandAnalyzer {
   }
 
   /**
-   * Analyzes a hand of playing cards and returns a string containing
-   * the sum of the face values of the cards,
+   * Analyzes a hand of playing cards and returns a string containing the sum of the face values of
+   * the cards,
+   *
    * @param hand a list of playing cards
    * @return a string containing the analysis of the hand
    */

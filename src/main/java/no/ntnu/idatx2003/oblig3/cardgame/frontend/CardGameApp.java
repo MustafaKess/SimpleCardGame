@@ -19,31 +19,32 @@ import java.util.List;
 
 public class CardGameApp extends Application {
 
-  private HBox cardBox;
-  private BorderPane root = new BorderPane();
-  private Label analysisLabel = new Label("");
-  private Label analysisText = new Label();
+  
+  private final BorderPane root = new BorderPane();
+  private final Label analysisLabel = new Label("");
+  private final Label analysisText = new Label();
   private Button showAnalysisButton; // Declare showAnalysisButton as a class member
-  private Button forceFlushButton;
 
   @Override
   public void start(Stage primaryStage) {
-    List<PlayingCard> hand = CardInitializer.initializeHand(); // Initialize the hand using CardInitializer
+    HBox cardBox;
+    List<PlayingCard> hand = CardInitializer.drawHand(); 
     cardBox = new HBox(10);
     for (PlayingCard card : hand) {
-      Node cardNode = CardInitializer.createCardImageView(card); // Use CardInitializer to create card images
+      Node cardNode = CardInitializer.createCardImageView(
+          card); 
       cardBox.getChildren().add(cardNode);
     }
 
-    forceFlushButton = new Button("Force Flush");
+    Button forceFlushButton = new Button("Force Flush");
     forceFlushButton.setOnAction(event -> {
-      List<PlayingCard> newHand = CardInitializer.forceFlush(); // Use CardInitializer to force flush
+      List<PlayingCard> newHand = CardInitializer.forceFlush(); 
       cardBox.getChildren().clear();
       for (PlayingCard card : newHand) {
-        Node cardNode = CardInitializer.createCardImageView(card); // Use CardInitializer to create card images
+        Node cardNode = CardInitializer.createCardImageView(
+            card); 
         cardBox.getChildren().add(cardNode);
       }
-      System.out.println("Forcing flush");
       updateAnalysisText(newHand);
     });
     showAnalysisButton = new Button("Show Analysis");
@@ -51,13 +52,13 @@ public class CardGameApp extends Application {
 
     Button rerollButton = new Button("Re-roll");
     rerollButton.setOnAction(event -> {
-      List<PlayingCard> newHand = CardInitializer.redrawHand(); // Use CardInitializer to redraw the hand
+      List<PlayingCard> newHand = CardInitializer.drawHand(); // Use CardInitializer to redraw the hand
       cardBox.getChildren().clear();
       for (PlayingCard card : newHand) {
-        Node cardNode = CardInitializer.createCardImageView(card); // Use CardInitializer to create card images
+        Node cardNode = CardInitializer.createCardImageView(
+            card); // Use CardInitializer to create card images
         cardBox.getChildren().add(cardNode);
       }
-      System.out.println("Re-rolling hand");
       updateAnalysisText(newHand);
     });
 
